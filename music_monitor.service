@@ -1,0 +1,12 @@
+[Unit]
+Description=Music Folder Monitor
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /root/monitor.sh
+WorkingDirectory=/root/
+#Restart=always
+ExecStop=/usr/bin/pkill -f "python server.py"  # Command to stop the Python server
+
+[Install]
+WantedBy=multi-user.target
