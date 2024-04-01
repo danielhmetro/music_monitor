@@ -29,6 +29,7 @@ usort($csv_data, function($a, $b) {
 });
 
 // Print as table
+echo '<a href="#" onclick="location.reload()">Refresh</a>';
 echo '<table border="1">';
 echo '<tr>';
 foreach ($header as $column) {
