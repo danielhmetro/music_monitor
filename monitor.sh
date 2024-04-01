@@ -1,6 +1,6 @@
 #!/bin/bash
 
-folder_to_monitor="/var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/admin/files/Music"
+folder_to_monitor="/var/lib/docker/volumes/nextcloud_aio_nextcloud_data/_data/admin/files/Music/R&B"
 log_file="access_logs.csv"
 max_rows=50
 
@@ -26,18 +26,21 @@ do
             title=$(echo "$title_noparen" | sed 's/\[[^][]*\]//g')
             artist=$(tageditor -e -f "$folder_to_monitor/$file" -n artist 2>/dev/null)
             youtube=$(tageditor -e -f "$folder_to_monitor/$file" -n comment 2>/dev/null)
+            
+            # Check if title and artist are not empty
+            if [[ -n "$title" && -n "$artist" ]]; then
+                # Log the event to the file
+                echo "\"$title\",\"$artist\",\"$last_access\",\"$youtube\"" | tee -a "$log_file"
 
-            # Log the event to the file
-            echo "\"$title\",\"$artist\",\"$last_access\",\"$youtube\"" | tee -a "$log_file"
+                # Increment row count
+                current_row_count=$((current_row_count + 1))
 
-            # Increment row count
-            current_row_count=$((current_row_count + 1))
-
-            # Check if the log file exceeds the maximum rows
-            if [[ $current_row_count -gt $max_rows ]]; then
-                # Remove old entries
-                sed -i '1d' "$log_file"
-                current_row_count=$((current_row_count - 1))
+                # Check if the log file exceeds the maximum rows
+                if [[ $current_row_count -gt $max_rows ]]; then
+                    # Remove old entries
+                    sed -i '1d' "$log_file"
+                    current_row_count=$((current_row_count - 1))
+                fi
             fi
         fi
 
